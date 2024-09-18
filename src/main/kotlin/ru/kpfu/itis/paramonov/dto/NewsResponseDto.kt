@@ -25,4 +25,9 @@ data class NewsDto(
 )
 
 @Serializable
-data class PlaceResponseDto(val id: Int)
+data class PlaceResponseDto(
+    val id: Int,
+    val title: String? = null,
+    val address: String? = null,
+    val phoneNumber: String? = null
+)

@@ -5,7 +5,7 @@ import kotlin.math.exp
 data class News(
     val id: Int,
     val title: String,
-    val place: Int?,
+    val place: Place?,
     val description: String,
     val siteUrl: String,
     val favoritesCount: Int,
@@ -15,3 +15,10 @@ data class News(
         1 / (1 + exp(-(favoritesCount.toDouble() / (commentsCount + 1))))
     }
 }
+
+data class Place(
+    val id: Int,
+    val title: String?,
+    val address: String?,
+    val phoneNumber: String?
+)

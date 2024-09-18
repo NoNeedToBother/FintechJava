@@ -75,6 +75,7 @@ class NewsService(
         val response = client.get("https://kudago.com/public-api/v1.4/news/") {
             url {
                 with(parameters) {
+                    append("expand", "place")
                     append("page_size", pageSize.toString())
                     append("page", page.toString())
                     append("text_format", textFormat)
