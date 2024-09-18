@@ -20,6 +20,8 @@ data class NewsDto(
     val favoritesCount: Int,
     @SerialName("comments_count")
     val commentsCount: Int,
+    @SerialName("publication_date")
+    val publicationDate: Long,
 )
 
 @Serializable

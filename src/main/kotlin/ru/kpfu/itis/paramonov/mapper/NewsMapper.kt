@@ -1,4 +1,4 @@
-package ru.kpfu.itis.paramonov
+package ru.kpfu.itis.paramonov.mapper
 
 import ru.kpfu.itis.paramonov.dto.News
 import ru.kpfu.itis.paramonov.dto.NewsDto
