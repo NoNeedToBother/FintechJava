@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.kpfu.itis.paramonov.configuration.time.LogTime;
 import ru.kpfu.itis.paramonov.dto.CityDto;
 import ru.kpfu.itis.paramonov.dto.request.CreateCityRequestDto;
 import ru.kpfu.itis.paramonov.dto.request.UpdateCityRequestDto;
@@ -17,6 +18,7 @@ import java.util.Collection;
 @RequestMapping("/api/v1/locations")
 @AllArgsConstructor
 @RestController
+@LogTime
 public class CityController {
 
     private CityService cityService;

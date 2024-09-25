@@ -1,2 +1,4 @@
 rootProject.name = "FintechJava"
 include 'app'
+include 'time-logging-starter'
+

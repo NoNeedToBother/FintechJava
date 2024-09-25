@@ -1,15 +1,11 @@
 package ru.kpfu.itis.paramonov.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Value
 public class CityDto {
 
-    private String slug;
+    String slug;
 
-    private String name;
+    String name;
 }

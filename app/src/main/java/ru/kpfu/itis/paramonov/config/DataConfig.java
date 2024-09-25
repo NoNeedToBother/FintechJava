@@ -9,12 +9,12 @@ import ru.kpfu.itis.paramonov.dto.CityDto;
 @Configuration
 public class DataConfig {
 
-    @Bean(name = "categoryDataSource")
+    @Bean
     public DataSource<Integer, CategoryDto> categoryDataSource() {
         return new DataSource<>();
     }
 
-    @Bean(name = "cityDataSource")
+    @Bean
     public DataSource<String, CityDto> cityDataSource() {
         return new DataSource<>();
     }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.kpfu.itis.paramonov.configuration.time.LogTime;
 import ru.kpfu.itis.paramonov.dto.CategoryDto;
 import ru.kpfu.itis.paramonov.dto.request.CreateCategoryRequestDto;
 import ru.kpfu.itis.paramonov.dto.request.UpdateCategoryRequestDto;
@@ -17,6 +18,7 @@ import java.util.Collection;
 @RequestMapping("/api/v1/places/categories")
 @AllArgsConstructor
 @RestController
+@LogTime
 public class CategoryController {
 
     private CategoryService categoryService;
