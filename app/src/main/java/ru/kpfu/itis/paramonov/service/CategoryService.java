@@ -10,9 +10,9 @@ public interface CategoryService {
 
     Collection<CategoryDto> getAll();
 
-    boolean add(Integer id, CategoryDto categoryDto);
+    CategoryDto add(Integer id, String slug, String name);
 
     CategoryDto remove(Integer id);
 
-    CategoryDto update(Integer id, CategoryDto categoryDto);
+    CategoryDto update(Integer id, String slug, String name);
 }

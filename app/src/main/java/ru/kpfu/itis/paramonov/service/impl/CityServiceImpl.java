@@ -25,8 +25,14 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public boolean add(String slug, CityDto cityDto) {
-        return cityDatasource.add(slug, cityDto);
+    public CityDto add(String slug, String name) {
+        CityDto cityDto = new CityDto(slug, name);
+        boolean success = cityDatasource.add(slug, cityDto);
+        if (success) {
+            return get(slug);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -35,7 +41,18 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public CityDto update(String slug, CityDto cityDto) {
-        return cityDatasource.update(slug, cityDto);
+    public CityDto update(String slug, String name) {
+        CityDto cityDto = get(slug);
+        if (cityDto != null) {
+            String resultName = cityDto.getName();
+            if (name != null) {
+                resultName = name;
+            }
+            CityDto result = new CityDto(slug, resultName);
+            return cityDatasource.update(slug, result);
+        } else {
+            CityDto result = new CityDto(slug, name);
+            return cityDatasource.update(slug, result);
+        }
     }
 }

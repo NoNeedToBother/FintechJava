@@ -10,7 +10,6 @@ import ru.kpfu.itis.paramonov.dto.request.CreateCityRequestDto;
 import ru.kpfu.itis.paramonov.dto.request.UpdateCityRequestDto;
 import ru.kpfu.itis.paramonov.dto.responses.CitiesResponseDto;
 import ru.kpfu.itis.paramonov.dto.responses.CityResponseDto;
-import ru.kpfu.itis.paramonov.exception.CreateEntityFailException;
 import ru.kpfu.itis.paramonov.service.CityService;
 
 import java.util.Collection;
@@ -25,17 +24,17 @@ public class CityController {
 
     @GetMapping
     public ResponseEntity<CitiesResponseDto> getAll() {
-        Collection<CityDto> cities = cityService.getAll();
-        return new ResponseEntity<>(new CitiesResponseDto(cities), HttpStatus.OK);
+        Collection<CityDto> cityDtos = cityService.getAll();
+        return new ResponseEntity<>(new CitiesResponseDto(cityDtos), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CityResponseDto> get(
             @PathVariable("id") String id
     ) {
-        CityDto city = cityService.get(id);
+        CityDto cityDto = cityService.get(id);
         return new ResponseEntity<>(
-                new CityResponseDto(city), HttpStatus.OK);
+                new CityResponseDto(cityDto), HttpStatus.OK);
     }
 
     @PostMapping("/{id}")
@@ -43,14 +42,8 @@ public class CityController {
             @RequestBody CreateCityRequestDto createCityRequestDto,
             @PathVariable("id") String id
     ) {
-        CityDto cityDto = new CityDto(
-                id,
-                createCityRequestDto.getName()
-        );
-        boolean added = cityService.add(id, cityDto);
-        if (added) {
-            return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.CREATED);
-        } else throw new CreateEntityFailException("Failed to create category");
+        CityDto cityDto = cityService.add(id, createCityRequestDto.getName());
+        return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -58,19 +51,8 @@ public class CityController {
             @PathVariable("id") String id,
             @RequestBody UpdateCityRequestDto updateCityRequestDto
     ) {
-        CityDto cityDto = cityService.get(id);
-        if (cityDto != null) {
-            String name = cityDto.getName();
-            if (updateCityRequestDto.getName() != null) {
-                name = updateCityRequestDto.getName();
-            }
-            CityDto result = cityService.update(id, new CityDto(id, name));
-            return new ResponseEntity<>(new CityResponseDto(result), HttpStatus.OK);
-        } else {
-            CityDto result = cityService.update(id,
-                    new CityDto(id, updateCityRequestDto.getName()));
-            return new ResponseEntity<>(new CityResponseDto(result), HttpStatus.CREATED);
-        }
+        CityDto cityDto = cityService.update(id, updateCityRequestDto.getName());
+        return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

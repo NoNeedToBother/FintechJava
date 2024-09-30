@@ -10,10 +10,10 @@ public interface CityService {
 
     Collection<CityDto> getAll();
 
-    boolean add(String slug, CityDto cityDto);
+    CityDto add(String slug, String name);
 
     CityDto remove(String slug);
 
-    CityDto update(String slug, CityDto cityDto);
+    CityDto update(String slug, String name);
 
 }

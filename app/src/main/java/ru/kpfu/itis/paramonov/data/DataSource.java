@@ -3,11 +3,12 @@ package ru.kpfu.itis.paramonov.data;
 import ru.kpfu.itis.paramonov.exception.IdExistsException;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataSource<ID, V> {
 
-    private ConcurrentHashMap<ID, V> values = new ConcurrentHashMap<>();
+    private final Map<ID, V> values = new ConcurrentHashMap<>();
 
     public V get(ID id) {
         if (id == null) {
@@ -24,11 +25,11 @@ public class DataSource<ID, V> {
         if (values.containsKey(id)) {
             throw new IdExistsException("Value with this id already exists");
         }
-        try {
+        if (id == null) {
+            return false;
+        } else {
             values.put(id, value);
             return true;
-        } catch (Exception e) {
-            return false;
         }
     }
 

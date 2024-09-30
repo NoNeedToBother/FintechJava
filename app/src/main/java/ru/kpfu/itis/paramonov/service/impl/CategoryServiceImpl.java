@@ -25,8 +25,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public boolean add(Integer id, CategoryDto categoryDto) {
-        return categoryDatasource.add(id, categoryDto);
+    public CategoryDto add(Integer id, String slug, String name) {
+        CategoryDto categoryDto = new CategoryDto(id, slug, name);
+        boolean success = categoryDatasource.add(id, categoryDto);
+        if (success) {
+            return categoryDatasource.get(id);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -35,7 +41,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto update(Integer id, CategoryDto categoryDto) {
-        return categoryDatasource.update(id, categoryDto);
+    public CategoryDto update(Integer id, String slug, String name) {
+        CategoryDto categoryDto = get(id);
+        if (categoryDto != null) {
+            String resultSlug = categoryDto.getSlug();
+            String resultName = categoryDto.getName();
+            if (slug != null) {
+                resultSlug = slug;
+            }
+            if (name != null) {
+                resultName = name;
+            }
+            CategoryDto result = new CategoryDto(id, resultSlug, resultName);
+            return categoryDatasource.update(id, result);
+        } else {
+            CategoryDto result = new CategoryDto(id, slug, name);
+            return categoryDatasource.update(id, result);
+        }
     }
 }
