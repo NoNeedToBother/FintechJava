@@ -1,6 +1,12 @@
 plugins {
     id("java")
     id("org.springframework.boot") version "3.3.4"
+    jacoco
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 apply(plugin = "io.spring.dependency-management")
@@ -19,6 +25,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test:3.6.10")
 
     val lombokVersion = "1.18.32"
     compileOnly("org.projectlombok:lombok:$lombokVersion")
@@ -27,4 +34,18 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    classDirectories.setFrom(files(classDirectories.files.map {
+        fileTree(it) {
+            exclude(
+                "ru/kpfu/itis/paramonov/dto/**"
+            )
+        }
+    }))
+}
+

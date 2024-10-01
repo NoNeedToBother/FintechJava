@@ -1,4 +1,4 @@
-package ru.itis.kpfu.paramonov.service;
+package ru.kpfu.itis.paramonov.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.kpfu.itis.paramonov.data.DataSource;
 import ru.kpfu.itis.paramonov.dto.CityDto;
-import ru.kpfu.itis.paramonov.service.CityService;
 import ru.kpfu.itis.paramonov.service.impl.CityServiceImpl;
 
 import java.util.Collection;
@@ -161,11 +160,11 @@ public class CityServiceTests {
             return cityDto;
         }).when(cityDataSource).update(eq("a"), eq(cityDto));
 
-        CityDto updatedCityDto = new CityDto("c", "C");
-        when(cityDataSource.update(eq("c"), eq(updatedCityDto))).thenReturn(updatedCityDto);
+        CityDto updatedCityDto = new CityDto("a", "C");
+        when(cityDataSource.update(eq("a"), eq(updatedCityDto))).thenReturn(updatedCityDto);
         //Act
         CityDto added = cityService.update("a", "A");
-        CityDto updated = cityService.update("c", "C");
+        CityDto updated = cityService.update("a", "C");
         //Assert
         assertAll(
                 () -> assertNotEquals(added, updated),
@@ -173,7 +172,7 @@ public class CityServiceTests {
                 () -> assertEquals(updatedCityDto, updated)
         );
         verify(cityDataSource).update(eq("a"), eq(cityDto));
-        verify(cityDataSource).update(eq("c"), eq(updatedCityDto));
+        verify(cityDataSource).update(eq("a"), eq(updatedCityDto));
     }
 
     @Test

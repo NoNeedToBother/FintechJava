@@ -1,4 +1,4 @@
-package ru.itis.kpfu.paramonov.service;
+package ru.kpfu.itis.paramonov.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.kpfu.itis.paramonov.data.DataSource;
 import ru.kpfu.itis.paramonov.dto.CategoryDto;
-import ru.kpfu.itis.paramonov.service.CategoryService;
 import ru.kpfu.itis.paramonov.service.impl.CategoryServiceImpl;
 
 import java.util.Collection;

@@ -1,8 +1,7 @@
-package ru.itis.kpfu.paramonov.data;
+package ru.kpfu.itis.paramonov.data;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.kpfu.itis.paramonov.data.DataSource;
 import ru.kpfu.itis.paramonov.exception.IdExistsException;
 
 import java.util.ArrayList;
