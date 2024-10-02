@@ -1,6 +1,8 @@
 package ru.kpfu.itis.paramonov.service.impl;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,15 +14,18 @@ import ru.kpfu.itis.paramonov.service.KudaGoApiService;
 
 import java.util.Collection;
 
-@AllArgsConstructor
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class KudaGoApiServiceImpl implements KudaGoApiService {
 
-    private WebClient webClient;
+    private final WebClient webClient;
 
-    private final String KUDA_GO_CATEGORIES_URl = "https://kudago.com/public-api/v1.4/place-categories/";
+    @Value("${kudago.cities-url}")
+    private String KUDA_GO_CITIES_URl;
 
-    private final String KUDA_GO_CITIES_URl = "https://kudago.com/public-api/v1.4/locations/";
+    @Value("${kudago.categories-url}")
+    private String KUDA_GO_CATEGORIES_URl;
 
     @Override
     public Mono<Collection<CityDto>> getAllCities() {
