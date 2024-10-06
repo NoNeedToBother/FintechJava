@@ -22,15 +22,14 @@ public class DataSource<ID, V> {
     }
 
     public boolean add(ID id, V value) {
+        if (id == null) {
+            return false;
+        }
         if (values.containsKey(id)) {
             throw new IdExistsException("Value with this id already exists");
         }
-        if (id == null) {
-            return false;
-        } else {
-            values.put(id, value);
-            return true;
-        }
+        values.put(id, value);
+        return true;
     }
 
     public V remove(ID id) {
