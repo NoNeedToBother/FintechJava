@@ -1,0 +1,23 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/cities"
+  },
+
+  "response": {
+    "status": 200,
+    "jsonBody": [
+      {
+        "slug":"a",
+        "name":"A"
+      },
+      {
+        "slug":"b",
+        "name":"B"
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

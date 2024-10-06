@@ -1,12 +1,10 @@
 package ru.kpfu.itis.paramonov.service;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Container;
@@ -18,7 +16,6 @@ import ru.kpfu.itis.paramonov.dto.CategoryDto;
 
 import java.util.Collection;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 
 @Testcontainers
 @SpringBootTest
@@ -28,39 +25,17 @@ public class KudaGoCategoryServiceIntegrationTests {
     private KudaGoApiService kudaGoApiService;
 
     @Container
-    static WireMockContainer wireMockContainer = new WireMockContainer("wiremock/wiremock:3.6.0");
+    static WireMockContainer wireMockContainer = new WireMockContainer("wiremock/wiremock:3.6.0")
+            .withMappingFromResource("categories", "category-mapping.json");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("kudago.categories-url", wireMockContainer::getBaseUrl);
+        registry.add("kudago.categories-url", () -> wireMockContainer.getBaseUrl() + "/categories");
     }
 
     @BeforeEach
     public void setUp() {
         wireMockContainer.start();
-
-        WireMock.get(WireMock.urlMatching(wireMockContainer.getBaseUrl()))
-                .willReturn(
-                        aResponse()
-                                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                .withBody(
-                                        """
-                                                [
-                                                  {
-                                                    "id":1,
-                                                    "slug":"a",
-                                                    "name":"A"
-                                                  },
-                                                  {
-                                                    "id":2,
-                                                    "slug":"b",
-                                                    "name":"B"
-                                                  }
-                                                ]
-                                        """
-                                )
-                );
-
     }
 
     @AfterEach

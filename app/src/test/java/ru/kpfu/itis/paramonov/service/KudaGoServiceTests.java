@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -36,6 +37,8 @@ public class KudaGoServiceTests {
     @BeforeEach
     public void setUp() {
         kudaGoApiService = new KudaGoApiServiceImpl(webClient);
+        ReflectionTestUtils.setField(kudaGoApiService, "KUDA_GO_CITIES_URl", "https://kudago.com/public-api/v1.4/locations/");
+        ReflectionTestUtils.setField(kudaGoApiService, "KUDA_GO_CATEGORIES_URl", "https://kudago.com/public-api/v1.4/place-categories/");
     }
 
     @Test
