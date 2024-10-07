@@ -3,3 +3,17 @@ api:
     uri: http://www.cbr.ru
     currency:
       uri: /scripts/XML_daily.asp
+resilience4j:
+  circuitbreaker:
+    instances:
+      currencies:
+        base-config: default
+    configs:
+      default:
+        failureRateThreshold: 50
+        waitDurationInOpenState: 1000
+        slidingWindowSize: 2
+        slidingWindowType: COUNT_BASED
+        slowCallDurationThreshold: 5s
+        slowCallRateThreshold: 50
+        minimum-number-of-calls: 10
