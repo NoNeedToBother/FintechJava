@@ -1,0 +1,5 @@
+api:
+  cbr:
+    uri: http://www.cbr.ru
+    currency:
+      uri: /scripts/XML_daily.asp
