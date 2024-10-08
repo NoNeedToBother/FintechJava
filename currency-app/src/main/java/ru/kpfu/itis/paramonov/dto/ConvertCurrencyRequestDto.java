@@ -14,6 +14,7 @@ public class ConvertCurrencyRequestDto {
     @NotNull(message = "Missing \"toCurrency\" parameter in request body") @ValidCurrency
     private String toCurrency;
 
-    @NotNull(message = "Missing \"amount\" parameter in request body") @Positive
+    @NotNull(message = "Missing \"amount\" parameter in request body")
+    @Positive(message = "Amount must be greater than 0")
     private Double amount;
 }
