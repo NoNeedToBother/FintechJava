@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.kpfu.itis.paramonov.dto.ConvertCurrencyRequestDto;
 import ru.kpfu.itis.paramonov.dto.ConvertedCurrencyDto;
 import ru.kpfu.itis.paramonov.dto.CurrencyRateDto;
+import ru.kpfu.itis.paramonov.dto.ErrorResponseDto;
 import ru.kpfu.itis.paramonov.service.CurrencyApiService;
 import ru.kpfu.itis.paramonov.validation.ValidCurrency;
 
@@ -31,11 +33,16 @@ public class CurrencyController {
     @Operation(summary = "Get currency rate by its code",
             description = "Get latest currency rate by its ISO-4217 code",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully returned currency rate", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "Invalid, incorrect or missing currency code", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "404", description = "Unsupported currency code", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "503", headers = @Header(name = "Retry-After", description = "3600"), description = "Failed to get data from external API", content = @Content(mediaType = "application/json"))
+                    @ApiResponse(responseCode = "200", description = "Successfully returned currency rate",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CurrencyRateDto.class))),
+                    @ApiResponse(responseCode = "400", description = "Invalid, incorrect or missing currency code",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                    @ApiResponse(responseCode = "404", description = "Unsupported currency code",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                    @ApiResponse(responseCode = "503", headers = @Header(name = "Retry-After", description = "3600"), description = "Failed to get data from external API",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
             })
     @GetMapping("/rates/{code}")
     public ResponseEntity<CurrencyRateDto> getCurrencyRate(
@@ -50,11 +57,16 @@ public class CurrencyController {
     @Operation(summary = "Convert money amount from one currency to another",
             description = "Convert specified money amount from one currency to another, each specified with ISO-4217 code",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully returned currency rate", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "400", description = "Invalid, incorrect or missing request body arguments", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "404", description = "Unsupported currency code(s)", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "503", headers = @Header(name = "Retry-After", description = "3600"), description = "Failed to get data from external API", content = @Content(mediaType = "application/json"))
+                    @ApiResponse(responseCode = "200", description = "Successfully converted from one currency to another",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConvertedCurrencyDto.class))),
+                    @ApiResponse(responseCode = "400", description = "Invalid, incorrect or missing request body arguments",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                    @ApiResponse(responseCode = "404", description = "Unsupported currency code(s)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                    @ApiResponse(responseCode = "503", headers = @Header(name = "Retry-After", description = "3600"), description = "Failed to get data from external API",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
             })
     @PostMapping("/convert")
     public ResponseEntity<ConvertedCurrencyDto> convertCurrencies(
