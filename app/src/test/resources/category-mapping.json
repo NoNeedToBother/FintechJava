@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/categories"
+  },
+
+  "response": {
+    "status": 200,
+    "jsonBody": [
+      {
+        "id": 1,
+        "slug":"a",
+        "name":"A"
+      },
+      {
+        "id": 2,
+        "slug":"b",
+        "name":"B"
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
