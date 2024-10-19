@@ -2,6 +2,7 @@ package ru.kpfu.itis.paramonov.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.kpfu.itis.paramonov.dto.ConvertCurrencyRequestDto;
 import ru.kpfu.itis.paramonov.dto.ConvertedCurrencyDto;
 import ru.kpfu.itis.paramonov.dto.CurrencyRateDto;
 import ru.kpfu.itis.paramonov.dto.api.CurrenciesApiResponseDto;
@@ -33,7 +34,11 @@ public class CurrencyApiServiceImpl implements CurrencyApiService {
     }
 
     @Override
-    public ConvertedCurrencyDto convertCurrencies(String fromCurrency, String toCurrency, Double amount) {
+    public ConvertedCurrencyDto convertCurrencies(ConvertCurrencyRequestDto convertCurrencyRequestDto) {
+        var fromCurrency = convertCurrencyRequestDto.getFromCurrency();
+        var toCurrency = convertCurrencyRequestDto.getToCurrency();
+        var amount = convertCurrencyRequestDto.getAmount();
+
         var currencies = currenciesApiService.getAllCurrencies();
         var currencyRateFrom = getCurrencyRateFromCurrenciesList(fromCurrency, currencies);
         var currencyRateTo = getCurrencyRateFromCurrenciesList(toCurrency, currencies);

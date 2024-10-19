@@ -4,10 +4,10 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import ru.kpfu.itis.paramonov.config.CentralBankApiConfigurationProperties;
 import ru.kpfu.itis.paramonov.dto.api.CurrenciesApiResponseDto;
 import ru.kpfu.itis.paramonov.exception.CurrencyApiGatewayErrorException;
 import ru.kpfu.itis.paramonov.service.CurrenciesApiService;
@@ -20,11 +20,11 @@ import java.time.format.DateTimeFormatter;
 public class CurrenciesApiServiceImpl implements CurrenciesApiService {
 
     @Autowired
-    @Qualifier("cb_client")
+    @Qualifier("central_bank_api_client")
     private RestClient restClient;
 
-    @Value("${api.cbr.currency.uri}")
-    private String currencyRateEndpoint;
+    @Autowired
+    private CentralBankApiConfigurationProperties centralBankApiConfigurationProperties;
 
     @Override
     @Cacheable("currency_rates")
@@ -35,7 +35,7 @@ public class CurrenciesApiServiceImpl implements CurrenciesApiService {
         try {
             return restClient.get()
                     .uri(uriBuilder ->
-                            uriBuilder.path(currencyRateEndpoint)
+                            uriBuilder.path(centralBankApiConfigurationProperties.getCurrencyUri())
                                     .queryParam("date_req", current.format(dateFormatter))
                                     .build())
                     .retrieve()

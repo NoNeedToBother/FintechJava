@@ -1,6 +1,6 @@
 package ru.kpfu.itis.paramonov.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -11,12 +11,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Configuration
+@AllArgsConstructor
 public class NetworkConfig {
 
-    @Value("${api.cbr.uri}")
-    private String CBR_URI;
+    private CentralBankApiConfigurationProperties centralBankApiConfigurationProperties;
 
-    @Bean("cb_client")
+    @Bean("central_bank_api_client")
     public RestClient restClient() {
         RestTemplate restTemplate = new RestTemplate();
         List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
@@ -24,7 +24,7 @@ public class NetworkConfig {
         restTemplate.setMessageConverters(messageConverters);
 
         return RestClient.builder(restTemplate)
-                .baseUrl(CBR_URI)
+                .baseUrl(centralBankApiConfigurationProperties.getMainUri())
                 .build();
     }
 }

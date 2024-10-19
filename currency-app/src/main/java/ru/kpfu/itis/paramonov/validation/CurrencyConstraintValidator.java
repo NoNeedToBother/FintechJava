@@ -11,7 +11,7 @@ public class CurrencyConstraintValidator implements ConstraintValidator<ValidCur
         try {
             Currency.getInstance(s.toUpperCase());
             return true;
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             return false;
         }
     }
