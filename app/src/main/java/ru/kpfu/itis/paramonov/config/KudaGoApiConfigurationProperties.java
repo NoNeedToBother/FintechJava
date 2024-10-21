@@ -21,6 +21,8 @@ public class KudaGoApiConfigurationProperties {
 
     private KudaGoApiConfigurationExecutorsProperties executorsConfig;
 
+    private int eventRateLimit;
+
     @Configuration
     @ConfigurationProperties(prefix = "kudago-api.executors-config")
     @Getter

@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Semaphore;
 
 @Configuration
 @RequiredArgsConstructor
@@ -34,9 +35,8 @@ public class NetworkConfig {
                 new CustomizableThreadFactory("data-scheduler-thread-"));
     }
 
-    @Bean("kudago_api_event_data_executor_service")
-    public ExecutorService kudaGoThreadPoolEventDataGetter() {
-        return Executors.newFixedThreadPool(10,
-                new CustomizableThreadFactory("event-data-executor-service-thread-"));
+    @Bean("kudago_api_event_rate_limiter")
+    public Semaphore eventRateLimiter() {
+        return new Semaphore(kudaGoApiConfigurationProperties.getEventRateLimit());
     }
 }

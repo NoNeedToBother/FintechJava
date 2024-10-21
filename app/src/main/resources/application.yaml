@@ -8,6 +8,7 @@ kudago-api:
     data-initializer-thread-amount: 10
     data-scheduler-duration: 600s
     event-data-getter-thread-amount: 10
+  event-rate-limit: 10
 
 currency-api:
   convert-currency-uri: http://localhost:8080/api/v1/currencies/convert
