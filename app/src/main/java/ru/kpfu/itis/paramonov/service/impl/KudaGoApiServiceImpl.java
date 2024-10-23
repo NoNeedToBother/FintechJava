@@ -2,10 +2,10 @@ package ru.kpfu.itis.paramonov.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import ru.kpfu.itis.paramonov.config.KudaGoApiConfigurationProperties;
 import ru.kpfu.itis.paramonov.dto.CategoryDto;
 import ru.kpfu.itis.paramonov.dto.CityDto;
 import ru.kpfu.itis.paramonov.dto.kudago.KudaGoCategoryResponseDto;
@@ -21,16 +21,12 @@ public class KudaGoApiServiceImpl implements KudaGoApiService {
 
     private final WebClient webClient;
 
-    @Value("${kudago.cities-url}")
-    private String KUDA_GO_CITIES_URl;
-
-    @Value("${kudago.categories-url}")
-    private String KUDA_GO_CATEGORIES_URl;
+    private final KudaGoApiConfigurationProperties kudaGoConfig;
 
     @Override
     public Mono<Collection<CityDto>> getAllCities() {
         return webClient.get()
-                .uri(KUDA_GO_CITIES_URl)
+                .uri(kudaGoConfig.getCitiesUri())
                 .retrieve()
                 .bodyToFlux(KudaGoCityResponseDto.class)
                 .collectList()
@@ -42,7 +38,7 @@ public class KudaGoApiServiceImpl implements KudaGoApiService {
     @Override
     public Mono<Collection<CategoryDto>> getAllCategories() {
         return webClient.get()
-                .uri(KUDA_GO_CATEGORIES_URl)
+                .uri(kudaGoConfig.getCategoriesUri())
                 .retrieve()
                 .bodyToFlux(KudaGoCategoryResponseDto.class)
                 .collectList()

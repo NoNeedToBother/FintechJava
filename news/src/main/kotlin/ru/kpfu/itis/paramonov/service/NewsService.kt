@@ -3,9 +3,11 @@ package ru.kpfu.itis.paramonov.service
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.serialization.json.Json
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import ru.kpfu.itis.paramonov.mapper.NewsMapper
 import ru.kpfu.itis.paramonov.dto.News
 import ru.kpfu.itis.paramonov.dto.NewsDto
@@ -21,8 +23,42 @@ class NewsService(
     private val newsMapper: NewsMapper
 ) {
 
+    private val logger: Logger? = LoggerFactory.getLogger("NewsService.kt")
+
     private val json = Json {
         ignoreUnknownKeys = true
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    suspend fun getNewsWithWorkers(count: Int = 100, workerAmount: Int = 5): Channel<News> {
+        if (count < 0) {
+            throw InvalidParameterException("News count cannot be negative")
+        }
+        val start = System.currentTimeMillis()
+        val totalPageCount = count.div(MAX_NEWS_PAGE_COUNT) + 1
+        val newsChannel = Channel<News>(Channel.UNLIMITED)
+
+        val threadPoolContext = newFixedThreadPoolContext(workerAmount, "news-worker")
+        return withContext(dispatcher) {
+            List(workerAmount) { i ->
+                launch(threadPoolContext) {
+                    val workerPages = i + 1..totalPageCount step workerAmount
+                    for (page in workerPages) {
+                        val newsCount = if (page == totalPageCount) {
+                            count.mod(MAX_NEWS_PAGE_COUNT)
+                        } else MAX_NEWS_PAGE_COUNT
+                        retrieveNews(MAX_NEWS_PAGE_COUNT, newsCount, page)
+                            .map { dto -> newsMapper.mapResponseToDto(dto) }
+                            .forEach { news -> newsChannel.send(news) }
+                    }
+                }
+            }.joinAll()
+            threadPoolContext.close()
+            newsChannel.close()
+            val end = System.currentTimeMillis()
+            logger?.info("Getting news with multithreading took {} ms", end - start)
+            newsChannel
+        }
     }
 
     suspend fun getNews(count: Int = 100): List<News> {
@@ -72,6 +108,7 @@ class NewsService(
         val fields = listOf("id", "title", "place", "description", "site_url", "favorites_count", "comments_count", "publication_date")
         val textFormat = "text"
         val location = "kzn"
+        val start = System.currentTimeMillis()
         val response = client.get("https://kudago.com/public-api/v1.4/news/") {
             url {
                 with(parameters) {
@@ -84,7 +121,9 @@ class NewsService(
                 }
             }
         }
+        val end = System.currentTimeMillis()
         val body = json.decodeFromString<NewsResponseDto>(response.body())
+        logger?.info("Request took {} ms", end - start)
         return body.results
             .subList(0, count)
     }

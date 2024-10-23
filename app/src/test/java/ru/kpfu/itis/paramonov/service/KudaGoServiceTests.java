@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import ru.kpfu.itis.paramonov.config.KudaGoApiConfigurationProperties;
 import ru.kpfu.itis.paramonov.dto.CategoryDto;
 import ru.kpfu.itis.paramonov.dto.CityDto;
 import ru.kpfu.itis.paramonov.dto.kudago.KudaGoCategoryResponseDto;
@@ -29,6 +29,9 @@ public class KudaGoServiceTests {
     private WebClient webClient;
 
     @Mock
+    private KudaGoApiConfigurationProperties kudaGoApiConfigurationProperties;
+
+    @Mock
     private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
 
     @Mock
@@ -36,9 +39,7 @@ public class KudaGoServiceTests {
 
     @BeforeEach
     public void setUp() {
-        kudaGoApiService = new KudaGoApiServiceImpl(webClient);
-        ReflectionTestUtils.setField(kudaGoApiService, "KUDA_GO_CITIES_URl", "https://kudago.com/public-api/v1.4/locations/");
-        ReflectionTestUtils.setField(kudaGoApiService, "KUDA_GO_CATEGORIES_URl", "https://kudago.com/public-api/v1.4/place-categories/");
+        kudaGoApiService = new KudaGoApiServiceImpl(webClient, kudaGoApiConfigurationProperties);
     }
 
     @Test
@@ -48,6 +49,7 @@ public class KudaGoServiceTests {
         KudaGoCityResponseDto cityResponseDto2 = new KudaGoCityResponseDto("b", "B");
         Flux<KudaGoCityResponseDto> citiesResponseFlux = Flux.just(cityResponseDto1, cityResponseDto2);
 
+        when(kudaGoApiConfigurationProperties.getCitiesUri()).thenReturn("https://kudago.com/public-api/v1.4/locations/");
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri("https://kudago.com/public-api/v1.4/locations/")).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
@@ -73,6 +75,7 @@ public class KudaGoServiceTests {
         KudaGoCategoryResponseDto categoryResponseDto2 = new KudaGoCategoryResponseDto(2, "b", "B");
         Flux<KudaGoCategoryResponseDto> categoriesResponseFlux = Flux.just(categoryResponseDto1, categoryResponseDto2);
 
+        when(kudaGoApiConfigurationProperties.getCategoriesUri()).thenReturn("https://kudago.com/public-api/v1.4/place-categories/");
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri("https://kudago.com/public-api/v1.4/place-categories/")).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
