@@ -1,6 +1,6 @@
 central-bank-api:
-    main-uri: http://www.cbr.ru
-    currency-uri: /scripts/XML_daily.asp
+  main-uri: http://www.cbr.ru
+  currency-uri: /scripts/XML_daily.asp
 resilience4j:
   circuitbreaker:
     instances:

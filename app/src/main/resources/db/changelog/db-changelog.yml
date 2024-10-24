@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: changelogs/create-places-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changelogs/create-events-table.sql
+      relativeToChangelogFile: true

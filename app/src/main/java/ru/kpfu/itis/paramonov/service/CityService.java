@@ -6,14 +6,14 @@ import java.util.Collection;
 
 public interface CityService {
 
-    CityDto get(String slug);
+    CityDto get(Long id);
 
     Collection<CityDto> getAll();
 
     CityDto add(String slug, String name);
 
-    CityDto remove(String slug);
+    CityDto remove(Long id);
 
-    CityDto update(String slug, String name);
+    CityDto update(Long id, String slug, String name);
 
 }
