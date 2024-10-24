@@ -30,34 +30,33 @@ public class CityController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CityResponseDto> get(
-            @PathVariable("id") String id
+            @PathVariable("id") Long id
     ) {
         CityDto cityDto = cityService.get(id);
         return new ResponseEntity<>(
                 new CityResponseDto(cityDto), HttpStatus.OK);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping
     public ResponseEntity<CityResponseDto> post(
-            @RequestBody CreateCityRequestDto createCityRequestDto,
-            @PathVariable("id") String id
+            @RequestBody CreateCityRequestDto createCityRequestDto
     ) {
-        CityDto cityDto = cityService.add(id, createCityRequestDto.getName());
+        CityDto cityDto = cityService.add(createCityRequestDto.getSlug(), createCityRequestDto.getName());
         return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CityResponseDto> put(
-            @PathVariable("id") String id,
+            @PathVariable("id") Long id,
             @RequestBody UpdateCityRequestDto updateCityRequestDto
     ) {
-        CityDto cityDto = cityService.update(id, updateCityRequestDto.getName());
+        CityDto cityDto = cityService.update(id, updateCityRequestDto.getSlug(), updateCityRequestDto.getName());
         return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<CityResponseDto> delete(
-            @PathVariable("id") String id
+            @PathVariable("id") Long id
     ) {
         CityDto cityDto = cityService.remove(id);
         return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.OK);

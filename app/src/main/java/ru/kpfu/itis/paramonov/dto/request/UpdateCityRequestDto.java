@@ -5,6 +5,8 @@ import lombok.Getter;
 @Getter
 public class UpdateCityRequestDto {
 
+    private String slug;
+
     private String name;
 
 }

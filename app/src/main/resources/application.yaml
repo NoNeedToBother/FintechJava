@@ -1,5 +1,25 @@
 server:
   port: 8888
+
+spring:
+  liquibase:
+    change-log: classpath:db/changelog/db-changelog.yml
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/postgres
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        sql: warn
+
 kudago-api:
   cities-uri: https://kudago.com/public-api/v1.4/locations/
   categories-uri: https://kudago.com/public-api/v1.4/place-categories/

@@ -1,14 +1,16 @@
 package ru.kpfu.itis.paramonov.service;
 
-import reactor.core.publisher.Mono;
-import ru.kpfu.itis.paramonov.dto.EventDto;
-
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import ru.kpfu.itis.paramonov.dto.EventEntityDto;
+import ru.kpfu.itis.paramonov.dto.request.CreateEventRequestDto;
+import ru.kpfu.itis.paramonov.dto.request.UpdateEventRequestDto;
 
 public interface EventService {
 
-    Mono<List<EventDto>> getEventsWithMono(Double budget, String currencyFrom, String dateFrom, String dateTo);
+    EventEntityDto read(Long id);
 
-    CompletableFuture<List<EventDto>> getEventsWithCompletableFuture(Double budget, String currencyFrom, String dateFrom, String dateTo);
+    EventEntityDto create(CreateEventRequestDto createEventRequestDto);
+
+    EventEntityDto update(Long id, UpdateEventRequestDto updateEventRequestDto);
+
+    EventEntityDto delete(Long id);
 }
