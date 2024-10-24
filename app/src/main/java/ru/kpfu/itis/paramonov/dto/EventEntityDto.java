@@ -7,6 +7,6 @@ public record EventEntityDto(
         String name,
         String description,
         Double price,
-        CityDto place,
+        PlaceDto place,
         LocalDateTime date
 ) { }

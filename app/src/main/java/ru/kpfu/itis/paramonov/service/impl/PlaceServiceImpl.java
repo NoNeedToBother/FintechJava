@@ -1,63 +1,65 @@
 package ru.kpfu.itis.paramonov.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.kpfu.itis.paramonov.dto.CityDto;
+import ru.kpfu.itis.paramonov.dto.PlaceDto;
 import ru.kpfu.itis.paramonov.entity.Place;
 import ru.kpfu.itis.paramonov.exception.PlaceNotFoundException;
-import ru.kpfu.itis.paramonov.mappers.PlaceEntityToCityDtoMapper;
+import ru.kpfu.itis.paramonov.mappers.PlaceEntityToPlaceDtoMapper;
 import ru.kpfu.itis.paramonov.repository.PlaceRepository;
-import ru.kpfu.itis.paramonov.service.CityService;
+import ru.kpfu.itis.paramonov.service.PlaceService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Slf4j
 @Service
 @AllArgsConstructor
-public class CityServiceImpl implements CityService {
+public class PlaceServiceImpl implements PlaceService {
 
     private PlaceRepository placeRepository;
 
-    private PlaceEntityToCityDtoMapper placeEntityToCityDtoMapper;
+    private PlaceEntityToPlaceDtoMapper placeEntityToPlaceDtoMapper;
 
     @Override
-    public CityDto get(Long id) {
-        return placeEntityToCityDtoMapper.mapFromEntity(
+    public PlaceDto get(Long id) {
+        return placeEntityToPlaceDtoMapper.mapFromEntity(
                 placeRepository.findById(id)
                         .orElseThrow(() -> new PlaceNotFoundException("Place not found"))
         );
     }
 
     @Override
-    public Collection<CityDto> getAll() {
+    public Collection<PlaceDto> getAll() {
         return placeRepository.findAll()
-                .stream().map(place -> placeEntityToCityDtoMapper.mapFromEntity(place))
+                .stream().map(place -> placeEntityToPlaceDtoMapper.mapFromEntity(place))
                 .toList();
     }
 
     @Override
-    public CityDto add(String slug, String name) {
+    public PlaceDto add(String slug, String name) {
         Place place = Place.builder()
                 .name(name)
                 .slug(slug)
                 .events(new ArrayList<>())
                 .build();
-        return placeEntityToCityDtoMapper.mapFromEntity(
+        return placeEntityToPlaceDtoMapper.mapFromEntity(
                 placeRepository.save(place)
         );
     }
 
     @Override
-    public CityDto remove(Long id) {
+    public PlaceDto remove(Long id) {
         Place place = placeRepository.findById(id)
                 .orElseThrow(() -> new PlaceNotFoundException("Place not found"));
-        CityDto result = placeEntityToCityDtoMapper.mapFromEntity(place);
+        PlaceDto result = placeEntityToPlaceDtoMapper.mapFromEntity(place);
         placeRepository.delete(place);
         return result;
     }
 
     @Override
-    public CityDto update(Long id, String slug, String name) {
+    public PlaceDto update(Long id, String slug, String name) {
         Place place = placeRepository.findById(id)
                 .orElseThrow(() -> new PlaceNotFoundException("Place not found"));
         if (slug != null) {
@@ -66,7 +68,7 @@ public class CityServiceImpl implements CityService {
         if (name != null) {
             place.setName(name);
         }
-        return placeEntityToCityDtoMapper.mapFromEntity(
+        return placeEntityToPlaceDtoMapper.mapFromEntity(
                 placeRepository.save(place)
         );
     }

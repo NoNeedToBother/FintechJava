@@ -18,7 +18,7 @@ import java.util.Collection;
 
 @Testcontainers
 @SpringBootTest
-public class KudaGoCityServiceIntegrationTests {
+public class KudaGoPlaceServiceIntegrationTests {
 
     @Autowired
     private KudaGoApiService kudaGoApiService;

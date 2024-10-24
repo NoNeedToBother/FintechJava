@@ -5,12 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.kpfu.itis.paramonov.configuration.time.LogTime;
-import ru.kpfu.itis.paramonov.dto.CityDto;
+import ru.kpfu.itis.paramonov.dto.PlaceDto;
 import ru.kpfu.itis.paramonov.dto.request.CreateCityRequestDto;
 import ru.kpfu.itis.paramonov.dto.request.UpdateCityRequestDto;
-import ru.kpfu.itis.paramonov.dto.responses.CitiesResponseDto;
-import ru.kpfu.itis.paramonov.dto.responses.CityResponseDto;
-import ru.kpfu.itis.paramonov.service.CityService;
+import ru.kpfu.itis.paramonov.dto.responses.PlacesResponseDto;
+import ru.kpfu.itis.paramonov.dto.responses.PlaceResponseDto;
+import ru.kpfu.itis.paramonov.service.PlaceService;
 
 import java.util.Collection;
 
@@ -20,45 +20,45 @@ import java.util.Collection;
 @LogTime
 public class CityController {
 
-    private CityService cityService;
+    private PlaceService placeService;
 
     @GetMapping
-    public ResponseEntity<CitiesResponseDto> getAll() {
-        Collection<CityDto> cityDtos = cityService.getAll();
-        return new ResponseEntity<>(new CitiesResponseDto(cityDtos), HttpStatus.OK);
+    public ResponseEntity<PlacesResponseDto> getAll() {
+        Collection<PlaceDto> cityDtos = placeService.getAll();
+        return new ResponseEntity<>(new PlacesResponseDto(cityDtos), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CityResponseDto> get(
+    public ResponseEntity<PlaceResponseDto> get(
             @PathVariable("id") Long id
     ) {
-        CityDto cityDto = cityService.get(id);
+        PlaceDto cityDto = placeService.get(id);
         return new ResponseEntity<>(
-                new CityResponseDto(cityDto), HttpStatus.OK);
+                new PlaceResponseDto(cityDto), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<CityResponseDto> post(
+    public ResponseEntity<PlaceResponseDto> post(
             @RequestBody CreateCityRequestDto createCityRequestDto
     ) {
-        CityDto cityDto = cityService.add(createCityRequestDto.getSlug(), createCityRequestDto.getName());
-        return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.CREATED);
+        PlaceDto cityDto = placeService.add(createCityRequestDto.getSlug(), createCityRequestDto.getName());
+        return new ResponseEntity<>(new PlaceResponseDto(cityDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CityResponseDto> put(
+    public ResponseEntity<PlaceResponseDto> put(
             @PathVariable("id") Long id,
             @RequestBody UpdateCityRequestDto updateCityRequestDto
     ) {
-        CityDto cityDto = cityService.update(id, updateCityRequestDto.getSlug(), updateCityRequestDto.getName());
-        return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.OK);
+        PlaceDto cityDto = placeService.update(id, updateCityRequestDto.getSlug(), updateCityRequestDto.getName());
+        return new ResponseEntity<>(new PlaceResponseDto(cityDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CityResponseDto> delete(
+    public ResponseEntity<PlaceResponseDto> delete(
             @PathVariable("id") Long id
     ) {
-        CityDto cityDto = cityService.remove(id);
-        return new ResponseEntity<>(new CityResponseDto(cityDto), HttpStatus.OK);
+        PlaceDto cityDto = placeService.remove(id);
+        return new ResponseEntity<>(new PlaceResponseDto(cityDto), HttpStatus.OK);
     }
 }

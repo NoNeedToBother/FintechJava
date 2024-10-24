@@ -33,6 +33,7 @@ dependencies {
 
     val testContainersVersion = "1.19.8"
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
+    testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
 
     testImplementation("org.wiremock:wiremock-standalone:3.6.0")

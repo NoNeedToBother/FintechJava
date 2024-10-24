@@ -9,7 +9,7 @@ import ru.kpfu.itis.paramonov.entity.Event;
 @AllArgsConstructor
 public class EventEntityToEventEntityDtoMapper {
 
-    private PlaceEntityToCityDtoMapper placeEntityToCityDtoMapper;
+    private PlaceEntityToPlaceDtoMapper placeEntityToPlaceDtoMapper;
 
     public EventEntityDto mapFromEntity(Event event) {
         return new EventEntityDto(
@@ -17,7 +17,7 @@ public class EventEntityToEventEntityDtoMapper {
                 event.getName(),
                 event.getDescription(),
                 event.getPrice(),
-                placeEntityToCityDtoMapper.mapFromEntity(event.getPlace()),
+                placeEntityToPlaceDtoMapper.mapFromEntity(event.getPlace()),
                 event.getDate().toLocalDateTime()
         );
     }

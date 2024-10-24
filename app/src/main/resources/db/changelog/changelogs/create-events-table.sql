@@ -1,10 +1,10 @@
 --changeset NoNeedToBother:2
 
 create table events(
-    id bigint primary key not null,
-    name varchar not null,
-    description varchar not null,
-    price float8 not null,
+    id bigserial primary key,
+    name varchar,
+    description varchar,
+    price float8,
     date timestamp,
-    place_id bigint references places(id) on delete cascade
+    place_id bigserial references places(id) on delete cascade
 );
