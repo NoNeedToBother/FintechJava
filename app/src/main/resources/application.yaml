@@ -1,0 +1,34 @@
+server:
+  port: 8888
+
+spring:
+  liquibase:
+    change-log: classpath:db/changelog/db-changelog.yml
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/fintech-java
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        sql: warn
+
+kudago-api:
+  cities-uri: https://kudago.com/public-api/v1.4/locations/
+  categories-uri: https://kudago.com/public-api/v1.4/place-categories/
+  events-uri: https://kudago.com/public-api/v1.4/events/
+  executors-config:
+    data-initializer-thread-amount: 10
+    data-scheduler-duration: 600s
+    event-data-getter-thread-amount: 10
+  event-rate-limit: 10
+
+currency-api:
+  convert-currency-uri: http://localhost:8080/api/v1/currencies/convert

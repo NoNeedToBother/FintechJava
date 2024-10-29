@@ -1,131 +1,171 @@
 package ru.kpfu.itis.paramonov.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import ru.kpfu.itis.paramonov.dto.CityDto;
-import ru.kpfu.itis.paramonov.service.CityService;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.kpfu.itis.paramonov.entity.Place;
+import ru.kpfu.itis.paramonov.repository.PlaceRepository;
 
-import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(CityController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@Testcontainers
 public class CityControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private CityService cityService;
+    @Autowired
+    private PlaceRepository placeRepository;
+
+    @Container
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry propertyRegistry) {
+        propertyRegistry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+        propertyRegistry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+        propertyRegistry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+    }
+
+    @BeforeEach
+    public void setUp() {
+        placeRepository.deleteAll();
+    }
 
     @Test
-    public void testGetAll() throws Exception {
+    public void createPlace_successfully_test() throws Exception {
         //Arrange
-        CityDto cityDto1 = new CityDto("a", "A");
-        CityDto cityDto2 = new CityDto("b", "B");
-        when(cityService.getAll()).thenReturn(List.of(cityDto1, cityDto2));
+        String json = """
+                {
+                    "name": "a",
+                    "slug": "a"
+                }""";
+        //Act, Assert
+        mockMvc.perform(post("/api/v1/locations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.place.name").value("a"))
+                .andExpect(jsonPath("$.place.slug").value("a"));
+    }
 
-        //Act
-        mockMvc.perform(get("/api/v1/locations"))
-        //Assert
+    @Test
+    public void getPlace_successfully_test() throws Exception {
+        //Arrange
+        Place place = Place.builder()
+                .name("a")
+                .slug("a")
+                .build();
+        place = placeRepository.save(place);
+        //Act, Assert
+        mockMvc.perform(get("/api/v1/locations/" + place.getId()))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.cities").isArray())
-                .andExpect(jsonPath("$.cities.length()").value(2))
-                .andExpect(jsonPath("$.cities[0].slug").value(cityDto1.getSlug()))
-                .andExpect(jsonPath("$.cities[0].name").value(cityDto1.getName()))
-                .andExpect(jsonPath("$.cities[1].slug").value(cityDto2.getSlug()))
-                .andExpect(jsonPath("$.cities[1].name").value(cityDto2.getName()));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.place.name").value("a"))
+                .andExpect(jsonPath("$.place.slug").value("a"));
     }
 
     @Test
-    public void testGet() throws Exception {
-        //Arrange
-        CityDto cityDto1 = new CityDto("a", "A");
-        CityDto cityDto2 = new CityDto("b", "B");
-        when(cityService.get("a")).thenReturn(cityDto1);
-        when(cityService.get("b")).thenReturn(cityDto2);
-
-        //Act
-        ResultActions result1 = mockMvc.perform(get("/api/v1/locations/a"));
-        ResultActions result2 = mockMvc.perform(get("/api/v1/locations/b"));
-        //Assert
-        result1.andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.city.slug").value(cityDto1.getSlug()))
-                .andExpect(jsonPath("$.city.name").value(cityDto1.getName()));
-        result2.andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.city.slug").value(cityDto2.getSlug()))
-                .andExpect(jsonPath("$.city.name").value(cityDto2.getName()));
+    public void getPlace_notFound_test() throws Exception {
+        //Act, Assert
+        mockMvc.perform(get("/api/v1/locations/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("Place not found"));
     }
 
     @Test
-    public void testAdd() throws Exception {
+    public void deletePlace_successfully_test() throws Exception {
         //Arrange
-        CityDto cityDto1 = new CityDto("a", "A");
-        when(cityService.add("a", "A")).thenReturn(cityDto1);
-
-        //Act
-        ResultActions result1 = mockMvc.perform(post("/api/v1/locations/a")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"A\"}"));
-        //Assert
-        result1.andExpect(status().isCreated())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.city.slug").value(cityDto1.getSlug()))
-                .andExpect(jsonPath("$.city.name").value(cityDto1.getName()));
+        Place place = Place.builder()
+                .name("a")
+                .slug("a")
+                .build();
+        place = placeRepository.save(place);
+        //Act, Assert
+        mockMvc.perform(delete("/api/v1/locations/" + place.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.place.name").value("a"))
+                .andExpect(jsonPath("$.place.slug").value("a"));
+        Optional<Place> deleted = placeRepository.findById(place.getId());
+        assertFalse(deleted.isPresent());
     }
 
     @Test
-    public void testDelete() throws Exception {
-        //Arrange
-        CityDto cityDto1 = new CityDto("a", "A");
-        when(cityService.remove("a")).thenReturn(cityDto1);
-
-        //Act
-        ResultActions result1 = mockMvc.perform(delete("/api/v1/locations/a"));
-        //Assert
-        result1.andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.city.slug").value(cityDto1.getSlug()))
-                .andExpect(jsonPath("$.city.name").value(cityDto1.getName()));
+    public void deletePlace_notFound_test() throws Exception {
+        //Act, Assert
+        mockMvc.perform(delete("/api/v1/locations/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("Place not found"));
     }
 
     @Test
-    public void testPut() throws Exception {
+    public void updatePlace_successfully_test() throws Exception {
         //Arrange
-        CityDto cityDto1 = new CityDto("a", "A");
-        CityDto cityDto2 = new CityDto("a", "B");
-        when(cityService.update("a", "A")).thenReturn(cityDto1);
-        when(cityService.update("a", "B")).thenReturn(cityDto2);
+        Place place = Place.builder()
+                .name("a")
+                .slug("a")
+                .build();
+        place = placeRepository.save(place);
+        String json = """
+                {
+                    "name": "b"
+                }
+                """;
+        //Act, Assert
+        mockMvc.perform(put("/api/v1/locations/" + place.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.place.name").value("b"))
+                .andExpect(jsonPath("$.place.slug").value(place.getSlug()));
+        Optional<Place> databasePlace = placeRepository.findById(place.getId());
+        assertAll(
+                () -> assertTrue(databasePlace.isPresent()),
+                () -> assertEquals("a", databasePlace.get().getSlug()),
+                () -> assertEquals("b", databasePlace.get().getName())
+        );
+    }
 
-        //Act
-        ResultActions result1 = mockMvc.perform(put("/api/v1/locations/a")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"A\"}"));
-        ResultActions result2 = mockMvc.perform(put("/api/v1/locations/a")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"B\"}"));
-        //Assert
-        result1.andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.city.slug").value(cityDto1.getSlug()))
-                .andExpect(jsonPath("$.city.name").value(cityDto1.getName()));
-
-        result2.andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.city.slug").value(cityDto2.getSlug()))
-                .andExpect(jsonPath("$.city.name").value(cityDto2.getName()));
+    @Test
+    public void updatePlace_notFound_test() throws Exception {
+        //Arrange
+        String json = """
+                {
+                    "name": "b"
+                }""";
+        //Act, Assert
+        mockMvc.perform(put("/api/v1/locations/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("Place not found"));
     }
 }

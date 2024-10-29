@@ -21,6 +21,10 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    runtimeOnly("org.postgresql:postgresql")
+    implementation("org.liquibase:liquibase-core:4.27.0")
     implementation(project(":time-logging-starter"))
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -29,6 +33,7 @@ dependencies {
 
     val testContainersVersion = "1.19.8"
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
+    testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
 
     testImplementation("org.wiremock:wiremock-standalone:3.6.0")
