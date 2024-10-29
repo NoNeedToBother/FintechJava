@@ -10,6 +10,7 @@ import ru.kpfu.itis.paramonov.dto.CategoryDto;
 import ru.kpfu.itis.paramonov.dto.CityDto;
 import ru.kpfu.itis.paramonov.dto.kudago.KudaGoCategoryResponseDto;
 import ru.kpfu.itis.paramonov.dto.kudago.KudaGoCityResponseDto;
+import ru.kpfu.itis.paramonov.exception.RemoteGatewayErrorException;
 import ru.kpfu.itis.paramonov.service.KudaGoApiService;
 
 import java.util.Collection;
@@ -30,6 +31,9 @@ public class KudaGoApiServiceImpl implements KudaGoApiService {
                 .retrieve()
                 .bodyToFlux(KudaGoCityResponseDto.class)
                 .collectList()
+                .onErrorResume(e -> Mono.error(
+                        new RemoteGatewayErrorException("Remote gateway error")
+                ))
                 .map(response -> response.stream()
                         .map(dto -> new CityDto(dto.getSlug(), dto.getName()))
                         .toList());
@@ -42,6 +46,9 @@ public class KudaGoApiServiceImpl implements KudaGoApiService {
                 .retrieve()
                 .bodyToFlux(KudaGoCategoryResponseDto.class)
                 .collectList()
+                .onErrorResume(e -> Mono.error(
+                        new RemoteGatewayErrorException("Remote gateway error")
+                ))
                 .map(response -> response.stream()
                         .map(dto -> new CategoryDto(dto.getId(), dto.getSlug(), dto.getName()))
                         .toList());

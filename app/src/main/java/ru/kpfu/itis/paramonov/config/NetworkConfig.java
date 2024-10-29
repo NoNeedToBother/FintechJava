@@ -22,20 +22,20 @@ public class NetworkConfig {
         return WebClient.builder().build();
     }
 
-    @Bean("kudago_api_data_initializer")
+    @Bean("kudagoApiDataInitializer")
     public ExecutorService kudaGoThreadPoolDataInitializer() {
         var threadAmount = kudaGoApiConfigurationProperties.getExecutorsConfig().getDataInitializerThreadAmount();
         return Executors.newFixedThreadPool(threadAmount,
                 new CustomizableThreadFactory("data-initializer-thread-"));
     }
 
-    @Bean("kudago_api_data_scheduler")
+    @Bean("kudagoApiDataScheduler")
     public ScheduledExecutorService kudaGoScheduledThreadPoolDataScheduler() {
         return Executors.newScheduledThreadPool(1,
                 new CustomizableThreadFactory("data-scheduler-thread-"));
     }
 
-    @Bean("kudago_api_event_rate_limiter")
+    @Bean("kudagoApiEventRateLimiter")
     public Semaphore eventRateLimiter() {
         return new Semaphore(kudaGoApiConfigurationProperties.getEventRateLimit());
     }

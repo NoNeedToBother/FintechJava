@@ -14,6 +14,7 @@ import ru.kpfu.itis.paramonov.dto.EventDto;
 import ru.kpfu.itis.paramonov.dto.kudago.events.KudaGoEventResponseDto;
 import ru.kpfu.itis.paramonov.dto.kudago.events.KudaGoEventsResponseDto;
 import ru.kpfu.itis.paramonov.exception.DateFormatException;
+import ru.kpfu.itis.paramonov.exception.RemoteGatewayErrorException;
 import ru.kpfu.itis.paramonov.service.CurrencyService;
 import ru.kpfu.itis.paramonov.service.EventService;
 
@@ -40,7 +41,7 @@ public class EventServiceImpl implements EventService {
 
     private final CurrencyService currencyService;
 
-    @Qualifier("kudago_api_event_rate_limiter")
+    @Qualifier("kudagoApiEventRateLimiter")
     @Autowired
     private Semaphore eventRateLimiter;
 
@@ -52,6 +53,9 @@ public class EventServiceImpl implements EventService {
 
         var eventsMono = Flux.range(1, MAX_EVENT_PAGE)
                 .concatMap(page -> getAllEvents(page, dateFrom, dateTo))
+                .onErrorResume(e -> Mono.error(
+                        new RemoteGatewayErrorException("Remote gateway error")
+                ))
                 .takeWhile(events -> !events.getEvents().isEmpty())
                 .flatMapIterable(KudaGoEventsResponseDto::getEvents)
                 .collectList()
@@ -75,6 +79,9 @@ public class EventServiceImpl implements EventService {
 
         var eventsFuture = Flux.range(1, MAX_EVENT_PAGE)
                 .concatMap(page -> getAllEvents(page, dateFrom, dateTo))
+                .onErrorResume(e -> Mono.error(
+                        new RemoteGatewayErrorException("Remote gateway error")
+                ))
                 .takeWhile(events -> !events.getEvents().isEmpty())
                 .flatMapIterable(KudaGoEventsResponseDto::getEvents)
                 .collectList()
@@ -137,7 +144,10 @@ public class EventServiceImpl implements EventService {
                             .queryParam("page", page)
                             .toUriString())
                     .retrieve()
-                    .bodyToMono(KudaGoEventsResponseDto.class);
+                    .bodyToMono(KudaGoEventsResponseDto.class)
+                    .onErrorResume(e -> Mono.error(
+                            new RemoteGatewayErrorException("Remote gateway error")
+                    ));
         } catch (InterruptedException e) {
             log.warn("Event data thread got interrupted");
             Thread.currentThread().interrupt();

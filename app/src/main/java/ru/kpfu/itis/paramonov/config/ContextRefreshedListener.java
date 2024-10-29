@@ -28,11 +28,11 @@ public class ContextRefreshedListener implements ApplicationListener<ContextRefr
 
     private final KudaGoApiConfigurationProperties kudaGoConfig;
 
-    @Qualifier("kudago_api_data_initializer")
+    @Qualifier("kudagoApiDataInitializer")
     @Autowired
     private ExecutorService dataInitializer;
 
-    @Qualifier("kudago_api_data_scheduler")
+    @Qualifier("kudagoApiDataScheduler")
     @Autowired
     private ScheduledExecutorService dataScheduler;
 

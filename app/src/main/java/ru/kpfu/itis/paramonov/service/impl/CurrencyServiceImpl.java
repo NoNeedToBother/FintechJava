@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 import ru.kpfu.itis.paramonov.config.CurrencyApiConfigurationProperties;
 import ru.kpfu.itis.paramonov.dto.CurrencyApiConvertRequestDto;
 import ru.kpfu.itis.paramonov.dto.CurrencyDto;
+import ru.kpfu.itis.paramonov.exception.RemoteGatewayErrorException;
 import ru.kpfu.itis.paramonov.service.CurrencyService;
 
 import java.util.concurrent.CompletableFuture;
@@ -24,13 +25,19 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public Mono<CurrencyDto> convertCurrenciesWithMono(String fromCurrency, Double budget) {
         return retrieveResponseBody(fromCurrency, budget)
-                .bodyToMono(CurrencyDto.class);
+                .bodyToMono(CurrencyDto.class)
+                .onErrorResume(e -> Mono.error(
+                        new RemoteGatewayErrorException("Remote gateway error")
+                ));
     }
 
     @Override
     public CompletableFuture<CurrencyDto> convertCurrenciesWithCompletableFuture(String fromCurrency, Double budget) {
         return retrieveResponseBody(fromCurrency, budget)
                 .bodyToMono(CurrencyDto.class)
+                .onErrorResume(e -> Mono.error(
+                        new RemoteGatewayErrorException("Remote gateway error")
+                ))
                 .toFuture();
     }
 
