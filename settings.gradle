@@ -6,4 +6,6 @@ include 'app'
 include 'time-logging-starter'
 include 'currency-app'
 include 'news'
+include 'list'
+include 'list'
 
