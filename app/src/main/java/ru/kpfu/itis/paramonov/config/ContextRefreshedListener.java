@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import ru.kpfu.itis.paramonov.commands.CommandInvoker;
+import ru.kpfu.itis.paramonov.commands.kudago.GetCategoriesCommand;
+import ru.kpfu.itis.paramonov.commands.kudago.GetCitiesCommand;
+import ru.kpfu.itis.paramonov.commands.kudago.KudaGoCommandReceiver;
 import ru.kpfu.itis.paramonov.configuration.time.LogTime;
-import ru.kpfu.itis.paramonov.data.DataSource;
-import ru.kpfu.itis.paramonov.dto.CategoryDto;
-import ru.kpfu.itis.paramonov.dto.CityDto;
-import ru.kpfu.itis.paramonov.service.impl.KudaGoApiServiceImpl;
+import ru.kpfu.itis.paramonov.observer.impl.KudaGoCategoryDataObserver;
+import ru.kpfu.itis.paramonov.observer.impl.KudaGoCityDataObserver;
 
 import java.util.concurrent.*;
 
@@ -20,13 +22,19 @@ import java.util.concurrent.*;
 @Slf4j
 public class ContextRefreshedListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    private final KudaGoApiServiceImpl kudaGoApiService;
+    private final CommandInvoker commandInvoker;
 
-    private final DataSource<Integer, CategoryDto> categoryDataSource;
+    private final GetCategoriesCommand getCategoriesCommand;
 
-    private final DataSource<String, CityDto> cityDataSource;
+    private final GetCitiesCommand getCitiesCommand;
 
     private final KudaGoApiConfigurationProperties kudaGoConfig;
+
+    private final KudaGoCategoryDataObserver kudaGoCategoryDataObserver;
+
+    private final KudaGoCityDataObserver kudaGoCityDataObserver;
+
+    private final KudaGoCommandReceiver kudaGoCommandReceiver;
 
     @Qualifier("kudago_api_data_initializer")
     @Autowired
@@ -40,6 +48,11 @@ public class ContextRefreshedListener implements ApplicationListener<ContextRefr
     @LogTime
     public void onApplicationEvent(ContextRefreshedEvent event) {
         var duration = kudaGoConfig.getExecutorsConfig().getDataSchedulerDuration();
+        commandInvoker.register("getCities", getCitiesCommand);
+        commandInvoker.register("getCategories", getCategoriesCommand);
+        kudaGoCommandReceiver.addObserver(kudaGoCategoryDataObserver);
+        kudaGoCommandReceiver.addObserver(kudaGoCityDataObserver);
+
         dataScheduler.scheduleAtFixedRate(this::getData, 0, duration.getSeconds(), TimeUnit.SECONDS);
     }
 
@@ -47,27 +60,16 @@ public class ContextRefreshedListener implements ApplicationListener<ContextRefr
     private void getData() {
         log.info("Begin gathering data from KudaGo API");
         var countDownLatch = new CountDownLatch(2);
+
         var start = System.currentTimeMillis();
 
         dataInitializer.submit(() -> {
-            var cities = kudaGoApiService.getAllCities()
-                    .block();
-            cities.forEach(dto -> {
-                cityDataSource.add(dto.getSlug(), dto);
-                log.info("City was added: {}", dto);
-            });
-            log.info("City data source is initialized");
+            commandInvoker.execute("getCities");
             countDownLatch.countDown();
         });
 
         dataInitializer.submit(() -> {
-            var categories = kudaGoApiService.getAllCategories()
-                    .block();
-            categories.forEach(dto -> {
-                categoryDataSource.add(dto.getId(), dto);
-                log.info("Category was added: {}", dto);
-            });
-            log.info("Category data source is initialized");
+            commandInvoker.execute("getCategories");
             countDownLatch.countDown();
         });
 
