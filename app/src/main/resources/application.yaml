@@ -10,8 +10,6 @@ spring:
     password: postgres
     url: jdbc:postgresql://localhost:5432/fintech-java
   jpa:
-    hibernate:
-      ddl-auto: update
     show-sql: true
 
 logging:
