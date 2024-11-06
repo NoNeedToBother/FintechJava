@@ -24,6 +24,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
+
+    val jwtVersion = "0.12.6"
+    implementation("io.jsonwebtoken:jjwt-api:$jwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jwtVersion")
+
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.liquibase:liquibase-core:4.27.0")
     implementation(project(":time-logging-starter"))
