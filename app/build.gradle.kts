@@ -37,6 +37,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test:3.6.10")
+    testImplementation("org.springframework.security:spring-security-test:6.3.4")
 
     val testContainersVersion = "1.19.8"
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")

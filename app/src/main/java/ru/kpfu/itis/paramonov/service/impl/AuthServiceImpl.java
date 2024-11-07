@@ -110,6 +110,9 @@ public class AuthServiceImpl implements AuthService {
                             passwordChangeRequestDto.getPreviousPassword()
                     ))
                     .build();
+
+            // code sending logic should be here
+
             passwordChangeRequestRepository.save(request);
         } else {
             throw new InvalidCredentialsException("Incorrect credentials");
