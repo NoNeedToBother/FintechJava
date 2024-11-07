@@ -8,3 +8,15 @@ databaseChangeLog:
   - include:
       file: changelogs/create-users-tables.sql
       relativeToChangelogFile: true
+  - include:
+      file: changelogs/unique-username.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changelogs/create-token-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changelogs/fix-token-length.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changelogs/add-password-changing.sql
+      relativeToChangelogFile: true

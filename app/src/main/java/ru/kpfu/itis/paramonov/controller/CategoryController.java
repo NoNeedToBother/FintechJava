@@ -3,6 +3,7 @@ package ru.kpfu.itis.paramonov.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.kpfu.itis.paramonov.configuration.time.LogTime;
 import ru.kpfu.itis.paramonov.dto.CategoryDto;
@@ -37,6 +38,7 @@ public class CategoryController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponseDto> post(
             @RequestBody CreateCategoryRequestDto createCategoryRequestDto,
             @PathVariable("id") Integer id
@@ -48,6 +50,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponseDto> put(
             @PathVariable("id") Integer id,
             @RequestBody UpdateCategoryRequestDto updateCategoryRequestDto
@@ -60,6 +63,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponseDto> delete(
             @PathVariable("id") Integer id
     ) {

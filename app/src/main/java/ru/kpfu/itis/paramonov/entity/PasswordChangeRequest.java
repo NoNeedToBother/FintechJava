@@ -4,23 +4,27 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "user_tokens")
+@Table(name = "password_change_requests")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Token {
+public class PasswordChangeRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String token;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    private boolean invalidated;
+    @Column(name = "previous_password")
+    private String previousPassword;
+
+    @Column(name = "new_password")
+    private String newPassword;
+
+    private String code;
 }

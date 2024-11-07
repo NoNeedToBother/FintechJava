@@ -3,6 +3,7 @@ package ru.kpfu.itis.paramonov.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.kpfu.itis.paramonov.configuration.time.LogTime;
 import ru.kpfu.itis.paramonov.dto.PlaceDto;
@@ -38,6 +39,7 @@ public class CityController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PlaceResponseDto> post(
             @RequestBody CreateCityRequestDto createCityRequestDto
     ) {
@@ -46,6 +48,7 @@ public class CityController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PlaceResponseDto> put(
             @PathVariable("id") Long id,
             @RequestBody UpdateCityRequestDto updateCityRequestDto
@@ -55,6 +58,7 @@ public class CityController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PlaceResponseDto> delete(
             @PathVariable("id") Long id
     ) {

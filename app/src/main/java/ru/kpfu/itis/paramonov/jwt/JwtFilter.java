@@ -1,10 +1,14 @@
 package ru.kpfu.itis.paramonov.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
+import ru.kpfu.itis.paramonov.dto.responses.ErrorResponseDto;
 import ru.kpfu.itis.paramonov.entity.Role;
 
 import jakarta.servlet.FilterChain;
@@ -12,6 +16,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import ru.kpfu.itis.paramonov.entity.Token;
+import ru.kpfu.itis.paramonov.repository.TokenRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +32,8 @@ public class JwtFilter extends GenericFilterBean {
     public static final String BEARER = "Bearer";
 
     private final JwtProvider jwtProvider;
+
+    private final TokenRepository tokenRepository;
 
     public static JwtAuthentication generate(Claims claims) {
         JwtAuthentication jwtAuthentication = new JwtAuthentication();
@@ -50,8 +58,21 @@ public class JwtFilter extends GenericFilterBean {
             if (jwtProvider.validateToken(token)) {
                 Claims claims = jwtProvider.getClaims(token);
                 JwtAuthentication jwtAuthentication = generate(claims);
-                jwtAuthentication.setAuthenticated(true);
-                SecurityContextHolder.getContext().setAuthentication(jwtAuthentication);
+                Token dbToken = tokenRepository.getTokenByUserIdAndToken(
+                        jwtAuthentication.getId(), token
+                );
+                if (dbToken.isInvalidated()) {
+                    var httpServletResponse = (HttpServletResponse) servletResponse;
+                    httpServletResponse.setContentType("application/json");
+                    httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    ErrorResponseDto responseDto = new ErrorResponseDto(
+                            HttpStatus.UNAUTHORIZED.value(), "Token is invalidated"
+                    );
+                    new ObjectMapper().writeValue(httpServletResponse.getOutputStream(), responseDto);
+                } else {
+                    jwtAuthentication.setAuthenticated(true);
+                    SecurityContextHolder.getContext().setAuthentication(jwtAuthentication);
+                }
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);
