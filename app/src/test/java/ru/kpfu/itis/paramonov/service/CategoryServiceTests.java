@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.kpfu.itis.paramonov.data.DataSource;
 import ru.kpfu.itis.paramonov.dto.CategoryDto;
+import ru.kpfu.itis.paramonov.memento.impl.CategoryMementoCaretaker;
 import ru.kpfu.itis.paramonov.service.impl.CategoryServiceImpl;
 
 import java.util.Collection;
@@ -24,9 +25,12 @@ public class CategoryServiceTests {
     @Mock
     private DataSource<Integer, CategoryDto> categoryDataSource;
 
+    @Mock
+    private CategoryMementoCaretaker categoryMementoCaretaker;
+
     @BeforeEach
     public void setUp() {
-        categoryService = new CategoryServiceImpl(categoryDataSource);
+        categoryService = new CategoryServiceImpl(categoryDataSource, categoryMementoCaretaker);
     }
 
     @Test
@@ -78,7 +82,7 @@ public class CategoryServiceTests {
         when(categoryDataSource.get(1)).thenReturn(categoryDto1);
         when(categoryDataSource.add(2, categoryDto2)).thenReturn(true);
         when(categoryDataSource.get(2)).thenReturn(categoryDto2);
-
+        doNothing().when(categoryMementoCaretaker).add(any(), any());
         //Act
         CategoryDto categoryDto1Added = categoryService.add(1, "a", "A");
         CategoryDto categoryDto2Added = categoryService.add(2, "b", "B");
@@ -99,6 +103,7 @@ public class CategoryServiceTests {
     public void testAdd_fail() {
         // Arrange
         when(categoryDataSource.add(isNull(), any())).thenReturn(false);
+        doNothing().when(categoryMementoCaretaker).add(any(), any());
 
         //Act, Assert
         assertNull(categoryService.add(null, "", ""));
@@ -124,6 +129,7 @@ public class CategoryServiceTests {
         //Arrange
         CategoryDto categoryDto = new CategoryDto(1, "a", "A");
         when(categoryDataSource.remove(1)).thenReturn(categoryDto);
+        doNothing().when(categoryMementoCaretaker).add(any(), any());
         //Act
         CategoryDto result1 = categoryService.remove(1);
         //Assert
@@ -134,6 +140,7 @@ public class CategoryServiceTests {
     public void testRemove_fail() {
         //Arrange
         when(categoryDataSource.remove(anyInt())).thenReturn(null);
+        doNothing().when(categoryMementoCaretaker).add(any(), any());
         //Act
         CategoryDto result1 = categoryService.remove(1);
         //Assert
@@ -160,6 +167,8 @@ public class CategoryServiceTests {
             return categoryDto;
         }).when(categoryDataSource).update(eq(1), eq(categoryDto));
 
+        doNothing().when(categoryMementoCaretaker).add(any(), any());
+
         CategoryDto updatedCategoryDto = new CategoryDto(1, "c", "C");
         when(categoryDataSource.update(eq(1), eq(updatedCategoryDto))).thenReturn(updatedCategoryDto);
         //Act
@@ -179,6 +188,7 @@ public class CategoryServiceTests {
     public void testUpdate_fail() {
         //Arrange
         when(categoryDataSource.update(isNull(), any())).thenReturn(null);
+        doNothing().when(categoryMementoCaretaker).add(any(), any());
         //Act
         CategoryDto updated = categoryService.update(null, "", "");
         //Assert

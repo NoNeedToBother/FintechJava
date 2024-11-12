@@ -1,8 +1,10 @@
 package ru.kpfu.itis.paramonov.list.impl;
 
+import ru.kpfu.itis.paramonov.iterator.CustomIterator;
 import ru.kpfu.itis.paramonov.list.CustomLinkedList;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CustomLinkedListImpl<E> implements CustomLinkedList<E> {
 
@@ -13,6 +15,30 @@ public class CustomLinkedListImpl<E> implements CustomLinkedList<E> {
 
         public Node(E value) {
             this.value = value;
+        }
+    }
+
+    private class Iterator implements CustomIterator<E> {
+
+        private int cursor;
+
+        @Override
+        public boolean hasNext() {
+            return cursor < size;
+        }
+
+        @Override
+        public E next() {
+            E elem = get(cursor);
+            cursor++;
+            return elem;
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super E> action) {
+            while (hasNext()) {
+                action.accept(next());
+            }
         }
     }
 
@@ -129,6 +155,11 @@ public class CustomLinkedListImpl<E> implements CustomLinkedList<E> {
     @Override
     public int size() {
         return size;
+    }
+
+    @Override
+    public CustomIterator<E> iterator() {
+        return new Iterator();
     }
 
     private void dereferenceNode(Node<E> node) {
