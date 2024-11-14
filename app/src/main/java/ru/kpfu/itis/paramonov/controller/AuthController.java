@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.kpfu.itis.paramonov.dto.request.LoginRequestDto;
 import ru.kpfu.itis.paramonov.dto.request.PasswordChangeRequestDto;
@@ -18,6 +19,7 @@ import ru.kpfu.itis.paramonov.service.AuthService;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Validated
 public class AuthController {
 
     private final AuthService authService;

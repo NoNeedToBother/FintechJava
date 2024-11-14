@@ -33,3 +33,10 @@ currency-api:
 
 jwt:
   secret: 0KDQsNC3INC00LLQsCDQstC+0YHQtdC80YzRgdC+0YIg0LTQstCwINC00Y/RgtC70LAg0YHQuNC00LXQu9C4INC90LAg0YHQvNC+0YLRgNC10LvQuC4g0JLRh9C10YDQsCDRg9GC0YDQvtC8INC4INGPINC80Ysg0YHQtdCz0L7QtNC90Y8g0LLQuNC00LjQvCDQstGB0LXRhSDQstC+0LrRgNGD0LMu
+
+auth:
+  password-config:
+    min-length: 8
+    require-digit: true
+    require-lowercase: true
+    require-uppercase: true

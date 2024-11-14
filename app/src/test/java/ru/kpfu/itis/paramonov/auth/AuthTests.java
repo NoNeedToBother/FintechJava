@@ -86,7 +86,7 @@ public class AuthTests {
     void registerUser_successfully_test() throws Exception {
         // Arrange
         RegisterUserRequestDto registerUserRequestDto = new RegisterUserRequestDto(
-                "username", "password"
+                "username", "Password1"
         );
         // Act, Assert
         mockMvc.perform(post("/api/v1/auth/register")
@@ -97,7 +97,7 @@ public class AuthTests {
         assertAll(
                 () -> assertTrue(dbUser.isPresent()),
                 () -> assertTrue(bCryptPasswordEncoder.matches(
-                        "password", dbUser.get().getPassword()
+                        "Password1", dbUser.get().getPassword()
                 ))
         );
     }
@@ -122,14 +122,14 @@ public class AuthTests {
     @Test
     void registerUser_usernameTaken_test() throws Exception {
         // Arrange
-        String encodedPassword = bCryptPasswordEncoder.encode("password");
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
         User user = User.builder()
                 .username("username")
                 .password(encodedPassword)
                 .build();
         userRepository.save(user);
         RegisterUserRequestDto registerUserRequestDto = new RegisterUserRequestDto(
-                "username", "password"
+                "username", "Password1"
         );
         // Act, Assert
         mockMvc.perform(post("/api/v1/auth/register")
@@ -141,12 +141,88 @@ public class AuthTests {
     }
 
     @Test
+    void registerUser_passwordLengthLow_test() throws Exception {
+        //Arrange
+        RegisterUserRequestDto registerUserRequestDto = new RegisterUserRequestDto(
+                "username", "pass"
+        );
+        // Act, Assert
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerUserRequestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(
+                        "Password should have length more then or equal to 8"
+                ));
+        Optional<User> dbUser = userRepository.findByUsername("username");
+        assertFalse(dbUser.isPresent());
+    }
+
+    @Test
+    void registerUser_passwordWithoutDigit_test() throws Exception {
+        //Arrange
+        RegisterUserRequestDto registerUserRequestDto = new RegisterUserRequestDto(
+                "username", "passworD"
+        );
+        // Act, Assert
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerUserRequestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(
+                        "Password should have at least one of each: uppercase, lowercase and digit character"
+                ));
+        Optional<User> dbUser = userRepository.findByUsername("username");
+        assertFalse(dbUser.isPresent());
+    }
+
+    @Test
+    void registerUser_passwordWithoutUppercase_test() throws Exception {
+        //Arrange
+        RegisterUserRequestDto registerUserRequestDto = new RegisterUserRequestDto(
+                "username", "password1"
+        );
+        // Act, Assert
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerUserRequestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(
+                        "Password should have at least one of each: uppercase, lowercase and digit character"
+                ));
+        Optional<User> dbUser = userRepository.findByUsername("username");
+        assertFalse(dbUser.isPresent());
+    }
+
+    @Test
+    void registerUser_passwordWithoutLowercase_test() throws Exception {
+        //Arrange
+        RegisterUserRequestDto registerUserRequestDto = new RegisterUserRequestDto(
+                "username", "PASSWORD1"
+        );
+        // Act, Assert
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerUserRequestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(
+                        "Password should have at least one of each: uppercase, lowercase and digit character"
+                ));
+        Optional<User> dbUser = userRepository.findByUsername("username");
+        assertFalse(dbUser.isPresent());
+    }
+
+    @Test
     void loginUser_successfully_test() throws Exception {
         // Arrange
         LoginRequestDto loginRequestDto = new LoginRequestDto(
-                "username", "password", null
+                "username", "Password1", null
         );
-        String encodedPassword = bCryptPasswordEncoder.encode("password");
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
         User user = User.builder()
                 .username("username")
                 .password(encodedPassword)
@@ -178,7 +254,7 @@ public class AuthTests {
     void loginUser_noUser_test() throws Exception {
         // Arrange
         LoginRequestDto loginRequestDto = new LoginRequestDto(
-                "username", "password", null
+                "username", "Password1", null
         );
         // Act, Assert
         mockMvc.perform(post("/api/v1/auth/login")
@@ -192,14 +268,14 @@ public class AuthTests {
     @Test
     void loginUser_incorrectPassword_test() throws Exception {
         // Arrange
-        String encodedPassword = bCryptPasswordEncoder.encode("passwor");
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
         User user = User.builder()
                 .username("username")
                 .password(encodedPassword)
                 .build();
         userRepository.save(user);
         LoginRequestDto loginRequestDto = new LoginRequestDto(
-                "username", "password", null
+                "username", "Password123", null
         );
         // Act, Assert
         mockMvc.perform(post("/api/v1/auth/login")
@@ -213,7 +289,7 @@ public class AuthTests {
     @Test
     void logout_successfully_test() throws Exception {
         //Arrange
-        String encodedPassword = bCryptPasswordEncoder.encode("password");
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
         User user = User.builder()
                 .username("username")
                 .password(encodedPassword)
@@ -243,7 +319,7 @@ public class AuthTests {
     @Test
     void changePassword_successfully_test() throws Exception {
         // Arrange
-        String encodedPassword = bCryptPasswordEncoder.encode("password");
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
         User user = User.builder()
                 .username("username")
                 .password(encodedPassword)
@@ -251,7 +327,7 @@ public class AuthTests {
                 .build();
         User savedUser = userRepository.save(user);
         PasswordChangeRequestDto passwordChangeRequestDto = new PasswordChangeRequestDto(
-                "passw", "password"
+                "Password123", "Password1"
         );
         String jwt = jwtProvider.generateToken(savedUser, false);
         Token token = tokenRepository.save(
@@ -271,9 +347,77 @@ public class AuthTests {
     }
 
     @Test
+    void changePassword_newPasswordLengthLow_test() throws Exception {
+        // Arrange
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
+        User user = User.builder()
+                .username("username")
+                .password(encodedPassword)
+                .roles(new HashSet<>())
+                .build();
+        User savedUser = userRepository.save(user);
+        PasswordChangeRequestDto passwordChangeRequestDto = new PasswordChangeRequestDto(
+                "pass", "Password1"
+        );
+        String jwt = jwtProvider.generateToken(savedUser, false);
+        Token token = tokenRepository.save(
+                Token.builder()
+                        .token(jwt)
+                        .invalidated(false)
+                        .user(savedUser)
+                        .build()
+        );
+        tokenRepository.save(token);
+        // Act, Assert
+        mockMvc.perform(post("/api/v1/auth/password/change")
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordChangeRequestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(
+                        "Password should have length more then or equal to 8"
+                ));
+    }
+
+    @Test
+    void changePassword_newPasswordWithoutRequiredCharacters_test() throws Exception {
+        // Arrange
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
+        User user = User.builder()
+                .username("username")
+                .password(encodedPassword)
+                .roles(new HashSet<>())
+                .build();
+        User savedUser = userRepository.save(user);
+        PasswordChangeRequestDto passwordChangeRequestDto = new PasswordChangeRequestDto(
+                "password", "Password1"
+        );
+        String jwt = jwtProvider.generateToken(savedUser, false);
+        Token token = tokenRepository.save(
+                Token.builder()
+                        .token(jwt)
+                        .invalidated(false)
+                        .user(savedUser)
+                        .build()
+        );
+        tokenRepository.save(token);
+        // Act, Assert
+        mockMvc.perform(post("/api/v1/auth/password/change")
+                        .header("Authorization", "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordChangeRequestDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value(
+                        "Password should have at least one of each: uppercase, lowercase and digit character"
+                ));
+    }
+
+    @Test
     void validateChangePassword_successfully_test() throws Exception {
         // Arrange
-        String encodedPassword = bCryptPasswordEncoder.encode("password");
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
         User user = User.builder()
                 .username("username")
                 .password(encodedPassword)
@@ -290,8 +434,8 @@ public class AuthTests {
         );
         tokenRepository.save(token);
         passwordChangeRequestRepository.save(PasswordChangeRequest.builder()
-                .newPassword("passw")
-                .previousPassword("password")
+                .newPassword(bCryptPasswordEncoder.encode("Password123"))
+                .previousPassword(bCryptPasswordEncoder.encode("Password1"))
                 .user(savedUser)
                 .code("0000")
                 .build());
@@ -302,12 +446,19 @@ public class AuthTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validatePasswordChangeRequestDto)))
                 .andExpect(status().isOk());
+
+        Optional<User> changed = userRepository.findByUsername("username");
+        assertTrue(
+                bCryptPasswordEncoder.matches(
+                        "Password123", changed.get().getPassword()
+                )
+        );
     }
 
     @Test
     void validateChangePassword_invalidCode_test() throws Exception {
         // Arrange
-        String encodedPassword = bCryptPasswordEncoder.encode("password");
+        String encodedPassword = bCryptPasswordEncoder.encode("Password1");
         User user = User.builder()
                 .username("username")
                 .password(encodedPassword)
@@ -325,8 +476,8 @@ public class AuthTests {
         tokenRepository.save(token);
         passwordChangeRequestRepository.save(PasswordChangeRequest.builder()
                 .user(savedUser)
-                .newPassword("passw")
-                .previousPassword("password")
+                .newPassword("Password123")
+                .previousPassword("Password1")
                 .code("0000")
                 .build());
         ValidatePasswordChangeRequestDto validatePasswordChangeRequestDto = new ValidatePasswordChangeRequestDto("1111");
