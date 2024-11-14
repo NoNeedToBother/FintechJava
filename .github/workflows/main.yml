@@ -22,12 +22,12 @@ jobs:
             
         - name: Build with Gradle for ${{ matrix.module }}
           working-directory: ${{ matrix.module }}
-          run: ./gradlew :${{ matrix.module }}:build
+          run: ./gradlew build
           
         - name: Run tests for ${{ matrix.module }}
           working-directory: ${{ matrix.module }}
-          run: ./gradlew :${{ matrix.module }}:test
+          run: ./gradlew test
           
         - name: Calculate test coverage for ${{ matrix.module }}
           working-directory: ${{ matrix.module }}
-          run: ./gradlew :${{ matrix.module }}:jacocoTestReport
+          run: ./gradlew jacocoTestReport
