@@ -8,4 +8,5 @@ include 'currency-app'
 include 'news'
 include 'list'
 include 'list'
+include 'message-brokers'
 
