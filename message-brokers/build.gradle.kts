@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("org.springframework.boot") version "3.3.4"
-    id("me.champeau.gradle.jmh") version "0.5.3"
+    id("me.champeau.jmh") version "0.7.2"
 }
 
 java {
@@ -24,14 +24,18 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
 
     val jmhVersion = "1.37"
+    jmh("org.openjdk.jmh:jmh-core:$jmhVersion")
+    jmh("org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion")
     implementation("org.openjdk.jmh:jmh-core:$jmhVersion")
-    implementation("org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion")
+    annotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion")
+    jmhAnnotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion")
 
     val lombokVersion = "1.18.32"
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
     testImplementation("org.springframework.amqp:spring-rabbit-test")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

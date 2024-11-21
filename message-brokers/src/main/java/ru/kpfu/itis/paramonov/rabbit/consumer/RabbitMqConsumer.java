@@ -1,13 +1,25 @@
 package ru.kpfu.itis.paramonov.rabbit.consumer;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class RabbitMqConsumer {
 
+    private List<OnMessageReceivedListener> onMessageReceivedListeners = new ArrayList<>();
+
+    public void addOnMessageReceivedListener(OnMessageReceivedListener onMessageReceivedListener) {
+        onMessageReceivedListeners.add(onMessageReceivedListener);
+    }
+
     public void receiveMessage(String message) {
-        log.info(message);
+        onMessageReceivedListeners.forEach(listener -> listener.onMessageReceived(message));
+    }
+
+    @FunctionalInterface
+    public interface OnMessageReceivedListener {
+        void onMessageReceived(String message);
     }
 }

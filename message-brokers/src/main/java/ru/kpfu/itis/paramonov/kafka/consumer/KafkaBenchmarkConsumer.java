@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 public class KafkaBenchmarkConsumer {
 
     @KafkaListener(topics = "benchmark", groupId = "benchmark.1")
-    void receiveMessage(String message) {
-        log.info(message);
-    }
+    void receiveMessage(String message) {}
 
 
 }
