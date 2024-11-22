@@ -23,6 +23,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
+    val jwtVersion = "0.12.6"
+    implementation("io.jsonwebtoken:jjwt-api:$jwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jwtVersion")
+
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.liquibase:liquibase-core:4.27.0")
     implementation(project(":time-logging-starter"))
@@ -30,6 +37,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test:3.6.10")
+    testImplementation("org.springframework.security:spring-security-test:6.3.4")
 
     val testContainersVersion = "1.19.8"
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")

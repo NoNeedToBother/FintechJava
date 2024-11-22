@@ -3,6 +3,7 @@ package ru.kpfu.itis.paramonov.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.kpfu.itis.paramonov.dto.EventEntityDto;
@@ -26,6 +27,7 @@ public class EventController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventEntityDto> create(@RequestBody CreateEventRequestDto createEventRequestDto) {
         return new ResponseEntity<>(
                 eventService.create(createEventRequestDto), HttpStatus.CREATED
@@ -33,6 +35,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventEntityDto> update(
             @PathVariable("id") long id,
             @RequestBody UpdateEventRequestDto updateEventRequestDto) {
@@ -42,6 +45,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventEntityDto> delete(@PathVariable("id") long id) {
         return new ResponseEntity<>(
                 eventService.delete(id), HttpStatus.OK
