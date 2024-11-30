@@ -1,0 +1,14 @@
+spring:
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+
+kafka-config:
+  topics:
+    benchmark-topic:
+      name: benchmark-topic
+      partitions: 2
+
+rabbitmq-config:
+  topics:
+    benchmark-topic:
+      name: benchmark-topic

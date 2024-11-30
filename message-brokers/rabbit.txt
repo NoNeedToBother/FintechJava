@@ -1,0 +1,6 @@
+Benchmark                                                   Mode  Cnt  Score   Error   Units
+RabbitBenchmark.loadBalancingAndMultipleConsumersBenchmark  thrpt    3   6,069 ± 10,999  ops/ms
+RabbitBenchmark.loadBalancingBenchmark                      thrpt    3   6,015 ±  4,305  ops/ms
+RabbitBenchmark.multipleConsumersBenchmark                  thrpt    3  18,762 ± 33,083  ops/ms
+RabbitBenchmark.simpleBenchmark                             thrpt    3  17,998 ± 24,944  ops/ms
+RabbitBenchmark.stressTestBenchmark                         thrpt    3   1,879 ±  3,206  ops/ms
